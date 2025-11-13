@@ -1,28 +1,25 @@
-
 import express, { Request, Response } from 'express';
 import bodyParser from 'body-parser';
-
+import cors from 'cors';
 
 import { CifraService } from "./Service/CifraService";
-
 
 import { CifraDto } from "./model/dto/CifraDto";
 import { DecifraDto } from "./model/dto/DecifraDto";
 import { DecifrarForcaBrutaRequestDto } from './model/dto/DecifrarForcaBrutaRequestDto';
 
-
 import { CifrarResponseDto } from "./model/dto/CifrarResponseDto";
 import { DecifrarResponseDto } from "./model/dto/DecifrarResponseDto";
-
 import { DecifrarForcaBrutaResponseDto } from './model/dto/DecifrarForcaBrutaResponseDto';
 
 
 const app = express();
 const port = 3000;
+
 app.use(bodyParser.json());
+app.use(cors());
 
 const servico = new CifraService(); 
-
 
 app.post('/cifrar', (req: Request, res: Response) => {
     try {
@@ -40,7 +37,6 @@ app.post('/cifrar', (req: Request, res: Response) => {
     }
 });
 
-
 app.post('/decifrar', (req: Request, res: Response) => {
     try {
         const dados: DecifraDto = req.body;
@@ -57,8 +53,6 @@ app.post('/decifrar', (req: Request, res: Response) => {
     }
 });
 
-
-
 app.post('/decifrarForcaBruta', (req: Request, res: Response) => {
     try {
         const dados: DecifrarForcaBrutaRequestDto = req.body;
@@ -68,17 +62,12 @@ app.post('/decifrarForcaBruta', (req: Request, res: Response) => {
              return;
         }
 
-
         const resultado = servico.decifrarForcaBruta(dados.textoCifrado);
 
         if (resultado) {
-    
             const respostaDto = new DecifrarForcaBrutaResponseDto(resultado.deslocamento, resultado.textoClaro);
-            
-         
             res.status(200).json(respostaDto);
         } else {
-   
             res.status(404).send({ message: "Não foi possível decifrar. Nenhuma palavra correspondente encontrada." });
         }
 
@@ -87,8 +76,6 @@ app.post('/decifrarForcaBruta', (req: Request, res: Response) => {
         res.status(500).send({ message: "Erro interno no servidor" });
     }
 });
-
-
 
 app.listen(port, () => {
     console.log(`API a correr em http://localhost:${port}`);
